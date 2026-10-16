@@ -393,6 +393,12 @@
 
     // Display charts using the saved theme
     createCharts();
+    window.addEventListener("storage", function (event) {
+    if (event.key === "housePriceTheme") {
+        applyTheme(event.newValue || "light");
+        createCharts();
+    }
+});
 </script>
 
 </body>

@@ -84,11 +84,22 @@ Activate it on Windows PowerShell:
 python -m pip install -r requirements.txt
 ```
 
-### 4. Configure environment variables
+### 4. Configure Environment Variables
 
-Set the environment variables required by the application, including the Flask secret key, Firebase service-account file path, and email SMTP settings.
+Before starting the application, configure the following environment variables:
 
-Keep credentials and service-account JSON files private. Do not commit them to GitHub.
+| Variable | Purpose |
+|---|---|
+| `SECRET_KEY` | Protects Flask sessions |
+| `FIREBASE_SERVICE_ACCOUNT_PATH` | Path to the Firebase service-account JSON file |
+| `MAIL_FROM` | Sender email address |
+| `SMTP_HOST` | SMTP server hostname |
+| `SMTP_PORT` | SMTP server port; defaults to `587` |
+| `SMTP_USERNAME` | SMTP login username |
+| `SMTP_PASSWORD` | SMTP login password or app password |
+| `COOKIE_SECURE` | Set to `true` when using HTTPS in production; use `false` for local HTTP development |
+
+Keep secret values and the Firebase service-account JSON file outside the repository. Never commit them to GitHub.
 
 ### 5. Run the application
 
@@ -115,6 +126,3 @@ Predictions are estimates based on the available dataset and may differ from act
 
 Prediction accuracy depends on the quality, coverage, and freshness of the dataset. Estimated prices should be used for informational purposes and not as a substitute for professional property valuation.
 
-## Author
-
-Harika Yallanti

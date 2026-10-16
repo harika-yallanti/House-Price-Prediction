@@ -70,9 +70,7 @@
             </button>
         </div>
 
-        <nav class="mobile-nav" id="mobileNav" aria-label="Mobile navigation">
-            
-<nav class="home-nav" aria-label="Main navigation">
+    <nav class="mobile-nav" id="mobileNav" aria-label="Mobile navigation">
     <a href="{{ url_for('home') }}" class="nav-link active">Home</a>
     <a href="{{ url_for('history') }}" class="nav-link">Prediction History</a>
     <a href="{{ url_for('compare') }}" class="nav-link">Compare Locations</a>
@@ -83,14 +81,12 @@
             Back to Dashboard
         </a>
     {% endif %}
+
+    <form action="{{ url_for('logout') }}" method="POST">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        <button type="submit" class="logout-button">Logout</button>
+    </form>
 </nav>
-
-          
-<form action="{{ url_for('logout') }}" method="POST">
-    <button type="submit" class="logout-button">Logout</button>
-</form>
-
-        </nav>
     </header>
 
     <main class="home-main">

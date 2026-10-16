@@ -464,8 +464,10 @@
                     "error"
                 );
             } finally {
-                button.disabled = false;
-                button.textContent = "Verify and Sign In";
+                if (!window.location.href.includes(result?.redirect || "\u0000")) {
+                    button.disabled = false;
+                    button.textContent = "Verify and Sign In";
+                }
             }
         });
 

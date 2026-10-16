@@ -412,7 +412,6 @@ def register():
 
 
 @app.route("/login", methods=["GET", "POST"])
-@app.route("/login", methods=["GET", "POST"])
 @limiter.limit("10 per minute", methods=["POST"])
 def login():
     if "user_id" in session:
@@ -476,7 +475,6 @@ def verify_email_code():
     return render_template("verify_email_code.html")
 
 
-@app.route("/auth/verify-email-code", methods=["POST"])
 @app.route("/auth/verify-email-code", methods=["POST"])
 @limiter.limit("10 per minute")
 def verify_email_code_submit():
@@ -592,8 +590,6 @@ def verify_email_code_submit():
         "redirect": destination
     })
 
-
-@app.route("/auth/google", methods=["POST"])
 @app.route("/auth/google", methods=["POST"])
 @limiter.limit("10 per minute")
 def google_login():
@@ -1114,5 +1110,4 @@ def delete_user(user_id):
 
 
 if __name__ == "__main__":
-    if __name__ == "__main__":
         app.run(debug=False)

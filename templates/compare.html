@@ -170,11 +170,18 @@
                 <strong>₹{{ "%.2f"|format(item.price_per_sqft) }}</strong>
             </div>
 
-            {% if loop.first %}
-            <div class="result-note">Highest estimated price</div>
-            {% elif loop.last %}
-            <div class="result-note">Lowest estimated price</div>
-            {% endif %}
+{% set highest_price = (comparisons | map(attribute='predicted_price') | max) | round(2) %}
+{% set lowest_price = (comparisons | map(attribute='predicted_price') | min) | round(2) %}
+{% set item_price = item.predicted_price | round(2) %}
+
+{% if highest_price == lowest_price %}
+    <div class="result-note">Same estimated price</div>
+{% elif item.predicted_price == highest_price %}
+    <div class="result-note">Highest estimated price</div>
+{% elif item.predicted_price == lowest_price %}
+    <div class="result-note">Lowest estimated price</div>
+{% endif %}
+
         </div>
         {% endfor %}
     </div>

@@ -197,5 +197,24 @@
             button.title = isHidden ? "Hide password" : "Show password";
         }
     </script>
+    <script>
+    const registerForm = document.querySelector(
+        'form[action="{{ url_for("register") }}"]'
+    );
+
+    if (registerForm) {
+        registerForm.addEventListener("submit", function (event) {
+            const password = document.getElementById("password").value;
+            const confirmPassword =
+                document.getElementById("confirm_password").value;
+
+            if (password !== confirmPassword) {
+                event.preventDefault();
+                alert("Passwords do not match.");
+                document.getElementById("confirm_password").focus();
+            }
+        });
+    }
+</script>
 </body>
 </html>
