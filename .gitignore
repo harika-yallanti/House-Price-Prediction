@@ -1,0 +1,54 @@
+
+# Python cache files
+__pycache__/
+*.py[cod]
+
+# Virtual environment
+venv/
+.venv/
+
+# Local database containing user information
+auth.db
+*.db
+*.sqlite
+*.sqlite3
+
+# Environment variables and secrets
+.env
+.env.*
+!.env.example
+*service-account*.json
+*service_account*.json
+firebase-adminsdk*.json
+
+# Local logs
+*.log
+
+# Backup files
+app_before_email_2fa.py
+*.bak
+*.backup
+
+# Editor and operating system files
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# Older model files
+models/house_price_model.pkl
+models/house_price_model_v2.pkl
+models/house_price_model_v3.pkl
+
+# Older trained models
+models/house_price_model.pkl
+models/house_price_model_v2.pkl
+models/house_price_model_v3.pkl
+
+# Temporary dataset testing files
+dataset/cleaned_house_data_backup.csv
+dataset/invalid_values.csv
+dataset/test_house_data.csv
+dataset/text_file.txt
+dataset/wrong_columns.csv
+

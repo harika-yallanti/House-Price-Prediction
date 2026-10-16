@@ -1,0 +1,500 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Home Price Prediction | Bengaluru</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+</head>
+
+<body class="home-page">
+    <header class="home-header">
+        <div class="home-header-inner">
+            <a href="{{ url_for('home') }}" class="home-brand">
+                <span class="brand-icon" aria-hidden="true">
+                    <svg viewBox="0 0 24 24" fill="none">
+                        <path d="M3 10.5L12 3L21 10.5V21H3V10.5Z"
+                              stroke="currentColor" stroke-width="1.8"
+                              stroke-linejoin="round"/>
+                        <path d="M9 21V14H15V21"
+                              stroke="currentColor" stroke-width="1.8"
+                              stroke-linejoin="round"/>
+                    </svg>
+                </span>
+                <span>
+                    <strong>HomeValue</strong>
+                    <small>PROPERTY PRICE PREDICTOR</small>
+                </span>
+            </a>
+
+            <nav class="home-nav" aria-label="Main navigation">
+                <a href="{{ url_for('home') }}" class="nav-link active">Home</a>
+                <a href="{{ url_for('history') }}" class="nav-link">Prediction History</a>
+                <a href="{{ url_for('compare') }}" class="nav-link">Compare Locations</a>
+                <a href="{{ url_for('market_trends') }}" class="nav-link">Market Trends</a>
+            </nav>
+
+            <div class="header-actions">
+                
+{% if session.get('user_role') == 'admin' %}
+    <a href="{{ url_for('admin_dashboard') }}"
+       style="display:inline-block; padding:10px 14px; background:#0f766e; color:white; text-decoration:none; border-radius:6px; font-size:14px; font-weight:600;">
+        Back to Dashboard
+    </a>
+{% endif %}
+
+                <button type="button" id="themeToggle"
+                        class="theme-toggle" aria-label="Toggle colour theme">
+                    <span id="themeIcon" aria-hidden="true">☾</span>
+                    <span id="themeLabel">Dark mode</span>
+                </button>
+
+                
+<form action="{{ url_for('logout') }}" method="POST">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+    <button type="submit" class="logout-link">Log out</button>
+</form>
+
+            </div>
+
+            <button type="button" class="mobile-menu-button"
+                    id="mobileMenuButton" aria-label="Open navigation"
+                    aria-expanded="false">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+        </div>
+
+        <nav class="mobile-nav" id="mobileNav" aria-label="Mobile navigation">
+            
+<nav class="home-nav" aria-label="Main navigation">
+    <a href="{{ url_for('home') }}" class="nav-link active">Home</a>
+    <a href="{{ url_for('history') }}" class="nav-link">Prediction History</a>
+    <a href="{{ url_for('compare') }}" class="nav-link">Compare Locations</a>
+    <a href="{{ url_for('market_trends') }}" class="nav-link">Market Trends</a>
+
+    {% if session.get('user_role') == 'admin' %}
+        <a href="{{ url_for('admin_dashboard') }}" class="nav-link dashboard-button">
+            Back to Dashboard
+        </a>
+    {% endif %}
+</nav>
+
+          
+<form action="{{ url_for('logout') }}" method="POST">
+    <button type="submit" class="logout-button">Logout</button>
+</form>
+
+        </nav>
+    </header>
+
+    <main class="home-main">
+
+        <section class="home-hero">
+            <div class="hero-content">
+                <div class="hero-label">
+                    <span class="status-dot"></span>
+                    BENGALURU REAL ESTATE
+                </div>
+                
+                <h1>Find the value of<br>your <span>next home.</span></h1>
+
+                <p>
+                    Make more informed property decisions with an estimated
+                    house price based on location, size and property details.
+                </p>
+
+                <div class="hero-benefits">
+                    <div class="hero-benefit">
+                        <span class="benefit-icon">01</span>
+                        <span>Choose your location</span>
+                    </div>
+                    <div class="hero-benefit">
+                        <span class="benefit-icon">02</span>
+                        <span>Enter property details</span>
+                    </div>
+                    <div class="hero-benefit">
+                        <span class="benefit-icon">03</span>
+                        <span>Get an estimated price</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="hero-visual" aria-hidden="true">
+                <div class="hero-orbit orbit-one"></div>
+                <div class="hero-orbit orbit-two"></div>
+
+                <div class="hero-house-card">
+                    <div class="house-illustration">
+                        <svg viewBox="0 0 320 250" fill="none">
+                            <path d="M35 112L160 20L285 112"
+                                  stroke="#0F766E" stroke-width="8"
+                                  stroke-linecap="round" stroke-linejoin="round"/>
+                            <path d="M65 103V218H255V103"
+                                  fill="#D7F0E9" stroke="#0F766E"
+                                  stroke-width="6" stroke-linejoin="round"/>
+                            <path d="M130 218V151C130 141 138 133 148 133H172C182 133 190 141 190 151V218"
+                                  fill="#0F766E"/>
+                            <rect x="83" y="126" width="31" height="31" rx="3"
+                                  fill="#FFFFFF" stroke="#0F766E" stroke-width="4"/>
+                            <path d="M98.5 126V157M83 141.5H114"
+                                  stroke="#0F766E" stroke-width="3"/>
+                            <rect x="206" y="126" width="31" height="31" rx="3"
+                                  fill="#FFFFFF" stroke="#0F766E" stroke-width="4"/>
+                            <path d="M221.5 126V157M206 141.5H237"
+                                  stroke="#0F766E" stroke-width="3"/>
+                            <path d="M48 218H272" stroke="#0F766E"
+                                  stroke-width="7" stroke-linecap="round"/>
+                            <circle cx="259" cy="52" r="17" fill="#F5C66B"/>
+                            <path d="M35 229H285" stroke="#A4D6C8"
+                                  stroke-width="4" stroke-linecap="round"/>
+                        </svg>
+                    </div>
+                    <div class="house-card-caption">
+                        <span class="caption-dot"></span>
+                        Your next home starts here
+                    </div>
+                </div>
+
+                <div class="floating-note floating-note-top">
+                    <span class="floating-note-icon">⌂</span>
+                    <span>
+                        <strong>Property insights</strong>
+                        <small>Location-based estimates</small>
+                    </span>
+                </div>
+
+                <div class="floating-note floating-note-bottom">
+                    <span class="floating-note-icon price-icon">₹</span>
+                    <span>
+                        <strong>Smarter decisions</strong>
+                        <small>Estimate before you invest</small>
+                    </span>
+                </div>
+            </div>
+        </section>
+
+        <section class="prediction-section" id="prediction-form">
+            <div class="section-heading">
+                <div>
+                    <span class="section-eyebrow">PROPERTY DETAILS</span>
+                    <h2>Calculate your home price</h2>
+                    <p>Enter the details below to get your estimated price.</p>
+                </div>
+                <span class="required-note">* Required fields</span>
+            </div>
+
+            {% if error %}
+            <div class="notice notice-error" role="alert">
+                <span class="notice-symbol">!</span>
+                <span>{{ error }}</span>
+            </div>
+            {% endif %}
+
+            <div class="prediction-layout">
+                <form action="{{ url_for('predict') }}" method="POST"
+                      class="prediction-form">
+                      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
+                    <div class="form-section-title">
+                        <span class="form-section-number">01</span>
+                        <div>
+                            <h3>Location</h3>
+                            <p>Where is the property located?</p>
+                        </div>
+                    </div>
+
+                    <div class="field-group">
+                        <label for="location">Property location <span>*</span></label>
+                        <select id="location" name="location" required>
+                            <option value="">Select a location</option>
+                            {% for location in locations %}
+                            <option value="{{ location }}"
+                                {% if form_data and form_data.location == location %}selected{% endif %}>
+                                {{ location }}
+                            </option>
+                            {% endfor %}
+                        </select>
+                        <small class="field-help">Choose a location available in the dataset.</small>
+                    </div>
+
+                    <div class="form-section-title section-title-spaced">
+                        <span class="form-section-number">02</span>
+                        <div>
+                            <h3>Property size</h3>
+                            <p>Enter the area and room details.</p>
+                        </div>
+                    </div>
+
+                    <div class="field-group">
+                        <label for="total_sqft">Total area <span>*</span></label>
+                        <div class="input-with-unit">
+                            <input type="number" id="total_sqft" name="total_sqft"
+                                   min="300" max="10000" step="any"
+                                   placeholder="e.g. 1200"
+                                   value="{{ form_data.total_sqft if form_data else '' }}"
+                                   required>
+                            <span>sq. ft.</span>
+                        </div>
+                    </div>
+
+                    <div class="form-field-grid">
+                        <div class="field-group">
+                            <label for="bhk">Bedrooms (BHK) <span>*</span></label>
+                            <select id="bhk" name="bhk" required>
+                                <option value="">Select BHK</option>
+                                {% for value in range(1, 11) %}
+                                <option value="{{ value }}"
+                                    {% if form_data and form_data.bhk|string == value|string %}selected{% endif %}>
+                                    {{ value }} BHK
+                                </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+
+                        <div class="field-group">
+                            <label for="bath">Bathrooms <span>*</span></label>
+                            <select id="bath" name="bath" required>
+                                <option value="">Select bathrooms</option>
+                                {% for value in range(1, 11) %}
+                                <option value="{{ value }}"
+                                    {% if form_data and form_data.bath|string == value|string %}selected{% endif %}>
+                                    {{ value }} bathroom{% if value != 1 %}s{% endif %}
+                                </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+
+                        <div class="field-group">
+                            <label for="balcony">Balconies <span>*</span></label>
+                            <select id="balcony" name="balcony" required>
+                                <option value="">Select balconies</option>
+                                {% for value in range(0, 6) %}
+                                <option value="{{ value }}"
+                                    {% if form_data and form_data.balcony|string == value|string %}selected{% endif %}>
+                                    {{ value }} balcony{% if value != 1 %}s{% endif %}
+                                </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-disclaimer">
+                        <span aria-hidden="true">ⓘ</span>
+                        The estimate depends on the available dataset and the
+                        trained machine-learning model. It is not a guaranteed
+                        market price.
+                    </div>
+
+                    <button type="submit" class="predict-button">
+                        <span>Predict property price</span>
+                        <span class="button-arrow" aria-hidden="true">→</span>
+                    </button>
+                </form>
+
+                <aside class="prediction-side-panel">
+                    <div class="side-panel-top">
+                        <span class="side-panel-icon" aria-hidden="true">⌂</span>
+                        <span class="side-panel-tag">HOW IT WORKS</span>
+                    </div>
+
+                    <h3>A clearer picture of your property's value.</h3>
+                    <p>
+                        Use property details to generate an estimated price
+                        from the model trained on housing data.
+                    </p>
+
+                    <div class="side-feature">
+                        <span class="side-feature-check">✓</span>
+                        <div>
+                            <strong>Location-based estimate</strong>
+                            <small>Choose from the available locations.</small>
+                        </div>
+                    </div>
+
+                    <div class="side-feature">
+                        <span class="side-feature-check">✓</span>
+                        <div>
+                            <strong>Property-specific inputs</strong>
+                            <small>Area, BHK, bathrooms and balconies.</small>
+                        </div>
+                    </div>
+
+                    <div class="side-feature">
+                        <span class="side-feature-check">✓</span>
+                        <div>
+                            <strong>Quick results</strong>
+                            <small>View your estimate after submission.</small>
+                        </div>
+                    </div>
+
+                    <a href="{{ url_for('market_trends') }}" class="side-panel-link">
+                        Explore market trends <span aria-hidden="true">→</span>
+                    </a>
+                </aside>
+            </div>
+        </section>
+
+        {% if prediction is not none and prediction != '' %}
+        <section class="prediction-result" id="prediction-result">
+            <div class="result-heading">
+                <div>
+                    <span class="section-eyebrow">YOUR ESTIMATE</span>
+                    <h2>Property price prediction</h2>
+                    <p>Here is the estimated value based on your inputs.</p>
+                </div>
+                <span class="result-status">Prediction complete</span>
+            </div>
+
+            <div class="result-price-card">
+                <div class="result-price-content">
+                    <span class="result-price-label">Estimated property price</span>
+                    <div class="result-price">
+                        ₹ {{ "%.2f"|format(prediction|float) }}
+                        <span>lakhs</span>
+                    </div>
+                    <p>This is a model-generated estimate, not a confirmed sale price.</p>
+                </div>
+                <div class="result-price-symbol" aria-hidden="true">₹</div>
+            </div>
+
+            <div class="result-details">
+                <div class="result-detail">
+                    <span>Location</span>
+                    <strong>{{ form_data.location }}</strong>
+                </div>
+                <div class="result-detail">
+                    <span>Built-up area</span>
+                    <strong>{{ form_data.total_sqft }} sq. ft.</strong>
+                </div>
+                <div class="result-detail">
+                    <span>Bedrooms</span>
+                    <strong>{{ form_data.bhk }} BHK</strong>
+                </div>
+                <div class="result-detail">
+                    <span>Bathrooms</span>
+                    <strong>{{ form_data.bath }}</strong>
+                </div>
+                <div class="result-detail">
+                    <span>Balconies</span>
+                    <strong>{{ form_data.balcony }}</strong>
+                </div>
+                {% if price_per_sqft is defined and price_per_sqft is not none %}
+                <div class="result-detail">
+                    <span>Estimated price per sq. ft.</span>
+                    <strong>₹ {{ "%.2f"|format(price_per_sqft|float) }}</strong>
+                </div>
+                {% endif %}
+            </div>
+
+            <div class="result-actions">
+                <a href="{{ url_for('home') }}" class="secondary-button">
+                    Calculate another property
+                </a>
+                <a href="{{ url_for('history') }}" class="primary-button">
+                    View prediction history →
+                </a>
+            </div>
+        </section>
+        {% endif %}
+
+        <section class="home-bottom-banner">
+            <div>
+                <span class="section-eyebrow">EXPLORE MORE</span>
+                <h2>Understand the housing market.</h2>
+                <p>Explore price patterns and compare property locations.</p>
+            </div>
+            <a href="{{ url_for('market_trends') }}" class="banner-button">
+                View market trends <span aria-hidden="true">→</span>
+            </a>
+        </section>
+
+    </main>
+
+    <footer class="home-footer">
+        <a href="{{ url_for('home') }}" class="footer-brand">HomeValue</a>
+        <p>House Price Prediction System · Bengaluru, India</p>
+        <p>Predictions are estimates and should not replace professional property valuation.</p>
+    </footer>
+
+    <script>
+        // Keep the user's theme preference across pages.
+        (function () {
+            const body = document.body;
+            const themeToggle = document.getElementById("themeToggle");
+            const themeIcon = document.getElementById("themeIcon");
+            const themeLabel = document.getElementById("themeLabel");
+
+            function applyTheme(theme) {
+                body.dataset.theme = theme;
+
+                if (themeIcon) {
+                    themeIcon.textContent = theme === "dark" ? "☀" : "☾";
+                }
+
+                if (themeLabel) {
+                    themeLabel.textContent = theme === "dark"
+                        ? "Light mode"
+                        : "Dark mode";
+                }
+            }
+
+            let savedTheme = "light";
+
+            try {
+                savedTheme = localStorage.getItem("housePriceTheme") || "light";
+            } catch (error) {
+                savedTheme = "light";
+            }
+
+            applyTheme(savedTheme);
+
+            if (themeToggle) {
+                themeToggle.addEventListener("click", function () {
+                    const nextTheme =
+                        body.dataset.theme === "dark" ? "light" : "dark";
+
+                    applyTheme(nextTheme);
+
+                    try {
+                        localStorage.setItem("housePriceTheme", nextTheme);
+                    } catch (error) {
+                        // The theme still works for this page if storage is unavailable.
+                    }
+                });
+            }
+        })();
+
+        // Mobile navigation menu.
+        (function () {
+            const menuButton = document.getElementById("mobileMenuButton");
+            const mobileNav = document.getElementById("mobileNav");
+
+            if (menuButton && mobileNav) {
+                menuButton.addEventListener("click", function () {
+                    const isOpen = mobileNav.classList.toggle("is-open");
+                    menuButton.setAttribute("aria-expanded", String(isOpen));
+                });
+            }
+        })();
+
+        // Bring the result into view after a successful prediction.
+        (function () {
+            const result = document.getElementById("prediction-result");
+
+            if (result) {
+                result.scrollIntoView({
+                    behavior: "smooth",
+                    block: "start"
+                });
+            }
+        })();
+    </script>
+
+</body>
+</html>

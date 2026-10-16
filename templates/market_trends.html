@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Housing Market Trends | HomeValue</title>
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='style.css') }}">
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+
+<body class="market-trends-page">
+
+<header class="header trends-header">
+    <div class="container trends-header-content">
+
+        <a href="{{ url_for('home') }}" class="trends-brand">
+            <span class="trends-brand-icon">⌂</span>
+
+            <span>
+                <strong>HomeValue</strong>
+                <small>PROPERTY PRICE PREDICTOR</small>
+            </span>
+        </a>
+
+        <div class="trends-header-actions">
+            <a href="{{ url_for('home') }}" class="trends-nav-link">
+                Back to Home
+            </a>
+
+            {% if session.get('user_role') == 'admin' %}
+            <a href="{{ url_for('admin_dashboard') }}"
+               class="trends-nav-link">
+                Back to Dashboard
+            </a>
+            {% endif %}
+        </div>
+
+    </div>
+</header>
+
+<main class="container trends-main">
+
+    <section class="trends-hero">
+        <div class="trends-hero-content">
+            <span class="trends-eyebrow">
+                BENGALURU REAL ESTATE
+            </span>
+
+            <h1>Housing Market Trends</h1>
+
+            <p>
+                Explore property prices and housing availability
+                across different Bengaluru locations.
+            </p>
+        </div>
+
+        <div class="trends-hero-icon">⌂</div>
+    </section>
+
+    <section class="trends-intro">
+        <div>
+            <span class="trends-section-label">MARKET OVERVIEW</span>
+
+            <h2>Understand the local property market</h2>
+
+            <p>
+                These charts summarize the property records available
+                in the dataset. They are estimates, not live market data.
+            </p>
+        </div>
+    </section>
+
+    <section class="chart-grid">
+
+        <article class="chart-panel">
+            <div class="chart-panel-heading">
+                <div class="chart-heading-icon price-icon">₹</div>
+
+                <div>
+                    <h3>Average House Price</h3>
+                    <p>Top 10 locations by average listed price</p>
+                </div>
+            </div>
+
+            <div class="chart-canvas">
+                <canvas id="priceChart"></canvas>
+            </div>
+
+            <p class="chart-note">
+                Prices are displayed in lakhs.
+            </p>
+        </article>
+
+        <article class="chart-panel">
+            <div class="chart-panel-heading">
+                <div class="chart-heading-icon count-icon">⌂</div>
+
+                <div>
+                    <h3>Property Availability</h3>
+                    <p>Top 10 locations by record count</p>
+                </div>
+            </div>
+
+            <div class="chart-canvas">
+                <canvas id="countChart"></canvas>
+            </div>
+
+            <p class="chart-note">
+                Counts represent records in the available dataset,
+                not all properties currently for sale.
+            </p>
+        </article>
+
+    </section>
+
+    <section class="trends-info">
+        <div class="trends-info-icon">i</div>
+
+        <div>
+            <h3>How to read these charts</h3>
+
+            <p>
+                The average price chart compares the mean listed price
+                across locations. The property availability chart shows
+                which locations have the most records in the dataset.
+                Actual selling prices may differ.
+            </p>
+        </div>
+    </section>
+
+</main>
+
+<footer class="trends-footer">
+    <p>HomeValue | House Price Prediction System</p>
+</footer>
+
+<script>
+    // Get the chart data from Flask
+    const priceLocations = {{ price_locations | tojson }};
+    const averagePrices = {{ average_prices | tojson }};
+    const countLocations = {{ count_locations | tojson }};
+    const propertyCounts = {{ property_counts | tojson }};
+
+    let priceChart;
+    let countChart;
+
+    // Apply the theme selected on the Home page
+    function applyTheme(theme) {
+        document.body.dataset.theme = theme;
+    }
+
+    const savedTheme =
+        localStorage.getItem("housePriceTheme") || "light";
+
+    applyTheme(savedTheme);
+
+    // Get colors based on the saved theme
+    function getChartColors() {
+        const isDark = document.body.dataset.theme === "dark";
+
+        return {
+            text: isDark ? "#e2e8f0" : "#334155",
+            grid: isDark ? "#334155" : "#e2e8f0",
+            tooltipBackground: isDark ? "#0f172a" : "#ffffff",
+            tooltipText: isDark ? "#f8fafc" : "#0f172a",
+            border: isDark ? "#475569" : "#e2e8f0"
+        };
+    }
+
+    // Create both charts
+    function createCharts() {
+        const colors = getChartColors();
+
+        if (priceChart) {
+            priceChart.destroy();
+        }
+
+        if (countChart) {
+            countChart.destroy();
+        }
+
+        // Average house price chart
+        priceChart = new Chart(
+            document.getElementById("priceChart"),
+            {
+                type: "bar",
+
+                data: {
+                    labels: priceLocations,
+
+                    datasets: [{
+                        label: "Average Price",
+                        data: averagePrices,
+                        backgroundColor: "#0f9488",
+                        hoverBackgroundColor: "#0d766e",
+                        borderRadius: 7,
+                        borderSkipped: false,
+                        maxBarThickness: 38
+                    }]
+                },
+
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+
+                    animation: {
+                        duration: 700
+                    },
+
+                    plugins: {
+                        legend: {
+                            display: false
+                        },
+
+                        tooltip: {
+                            backgroundColor: colors.tooltipBackground,
+                            titleColor: colors.tooltipText,
+                            bodyColor: colors.tooltipText,
+                            borderColor: colors.border,
+                            borderWidth: 1,
+                            padding: 12,
+                            displayColors: false,
+
+                            callbacks: {
+                                label: function(context) {
+                                    return "Average price: ₹" +
+                                        Number(context.raw).toLocaleString(
+                                            "en-IN",
+                                            { maximumFractionDigits: 2 }
+                                        ) + " lakhs";
+                                }
+                            }
+                        }
+                    },
+
+                    scales: {
+                        x: {
+                            ticks: {
+                                color: colors.text,
+                                maxRotation: 45,
+                                minRotation: 0,
+
+                                font: {
+                                    size: 11
+                                }
+                            },
+
+                            grid: {
+                                display: false
+                            },
+
+                            border: {
+                                display: false
+                            }
+                        },
+
+                        y: {
+                            beginAtZero: true,
+
+                            title: {
+                                display: true,
+                                text: "Average Price (Lakhs)",
+                                color: colors.text,
+
+                                font: {
+                                    size: 13,
+                                    weight: "600"
+                                }
+                            },
+
+                            ticks: {
+                                color: colors.text,
+
+                                font: {
+                                    size: 11
+                                }
+                            },
+
+                            grid: {
+                                color: colors.grid
+                            },
+
+                            border: {
+                                display: false
+                            }
+                        }
+                    }
+                }
+            }
+        );
+
+        // Property records chart
+        countChart = new Chart(
+            document.getElementById("countChart"),
+            {
+                type: "bar",
+
+                data: {
+                    labels: countLocations,
+
+                    datasets: [{
+                        label: "Property Records",
+                        data: propertyCounts,
+                        backgroundColor: "#4776e6",
+                        hoverBackgroundColor: "#345bc0",
+                        borderRadius: 7,
+                        borderSkipped: false,
+                        maxBarThickness: 27
+                    }]
+                },
+
+                options: {
+                    indexAxis: "y",
+                    responsive: true,
+                    maintainAspectRatio: false,
+
+                    animation: {
+                        duration: 700
+                    },
+
+                    plugins: {
+                        legend: {
+                            display: false
+                        },
+
+                        tooltip: {
+                            backgroundColor: colors.tooltipBackground,
+                            titleColor: colors.tooltipText,
+                            bodyColor: colors.tooltipText,
+                            borderColor: colors.border,
+                            borderWidth: 1,
+                            padding: 12,
+                            displayColors: false,
+
+                            callbacks: {
+                                label: function(context) {
+                                    return "Property records: " +
+                                        Number(context.raw).toLocaleString(
+                                            "en-IN"
+                                        );
+                                }
+                            }
+                        }
+                    },
+
+                    scales: {
+                        x: {
+                            beginAtZero: true,
+
+                            ticks: {
+                                color: colors.text,
+
+                                font: {
+                                    size: 11
+                                }
+                            },
+
+                            grid: {
+                                color: colors.grid
+                            },
+
+                            border: {
+                                display: false
+                            }
+                        },
+
+                        y: {
+                            ticks: {
+                                color: colors.text,
+
+                                font: {
+                                    size: 11
+                                }
+                            },
+
+                            grid: {
+                                display: false
+                            },
+
+                            border: {
+                                display: false
+                            }
+                        }
+                    }
+                }
+            }
+        );
+    }
+
+    // Display charts using the saved theme
+    createCharts();
+</script>
+
+</body>
+</html>

@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manage Dataset | HousePrice</title>
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <script>
+        document.body.dataset.theme =
+            localStorage.getItem("housePriceTheme") || "light";
+    </script>
+
+    <div class="layout">
+        <aside class="sidebar">
+            <div class="brand">House<span>Price</span></div>
+
+            <p class="menu-title">ADMIN MENU</p>
+
+            <nav>
+                <a href="{{ url_for('admin_dashboard') }}" class="nav-link">
+                    Dashboard
+                </a>
+                <a href="{{ url_for('market_trends') }}" class="nav-link">
+                    Market Trends
+                </a>
+                <a href="{{ url_for('home') }}" class="nav-link">
+                    Price Prediction
+                </a>
+                <a href="{{ url_for('history') }}" class="nav-link">
+                    Prediction History
+                </a>
+                <a href="{{ url_for('manage_dataset') }}"
+                   class="nav-link active">
+                    Manage Dataset
+                </a>
+            </nav>
+        </aside>
+
+        <main class="main">
+            <div class="dataset-page">
+
+                <header class="dataset-header">
+                    <div>
+                        <h1>Manage Dataset</h1>
+                        <p class="subtitle">
+                            Upload and manage the housing data used for
+                            market trends and property insights.
+                        </p>
+                    </div>
+
+                    <a href="{{ url_for('admin_dashboard') }}"
+                       class="admin-back-button">
+                        Back to Dashboard
+                    </a>
+                </header>
+
+                {% if message %}
+                    <div class="dataset-alert dataset-success">
+                        {{ message }}
+                    </div>
+                {% endif %}
+
+                {% if error %}
+                    <div class="dataset-alert dataset-error">
+                        {{ error }}
+                    </div>
+                {% endif %}
+
+                <div class="dataset-summary">
+                    <div class="dataset-info-card">
+                        <span>Current Dataset</span>
+                        <strong>{{ dataset_name }}</strong>
+                    </div>
+
+                    <div class="dataset-info-card">
+                        <span>Total Records</span>
+                        <strong>{{ total_records }}</strong>
+                    </div>
+
+                    <div class="dataset-info-card">
+                        <span>Total Columns</span>
+                        <strong>{{ columns|length }}</strong>
+                    </div>
+                </div>
+
+                <section class="dataset-section">
+                    <h2>Upload New Dataset</h2>
+                    <p class="dataset-description">
+                        Select a valid CSV file containing the required
+                        housing data columns.
+                    </p>
+
+                    <form method="POST" enctype="multipart/form-data">
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                        <div class="form-group">
+                            <label for="dataset">Choose CSV file</label>
+                            <input type="file"
+                                   id="dataset"
+                                   name="dataset"
+                                   accept=".csv"
+                                   required>
+                            <small>
+                                Required columns: location, total_sqft,
+                                bath, balcony, bhk, price.
+                            </small>
+                        </div>
+
+                        <button type="submit" class="compare-button">
+                            Upload Dataset
+                        </button>
+                    </form>
+                </section>
+
+                <section class="dataset-section">
+                    <div class="dataset-section-heading">
+                        <div>
+                            <h2>Dataset Structure</h2>
+                            <p class="dataset-description">
+                                Overview of the fields used by the
+                                prediction system.
+                            </p>
+                        </div>
+
+                        <span class="column-count">
+                            {{ columns|length }} Fields
+                        </span>
+                    </div>
+
+                    <div class="dataset-columns">
+                        {% for column in columns %}
+                            <div class="dataset-column-card">
+                                <div class="column-card-top">
+                                    <span class="column-icon">
+                                        {% if column == 'location' %}
+                                            <i class="column-symbol">LOC</i>
+                                        {% elif column == 'total_sqft' %}
+                                            <i class="column-symbol">AREA</i>
+                                        {% elif column == 'price' %}
+                                            <i class="column-symbol">₹</i>
+                                        {% elif column == 'bhk' %}
+                                            <i class="column-symbol">BED</i>
+                                        {% elif column == 'bath' %}
+                                            <i class="column-symbol">BTH</i>
+                                        {% else %}
+                                            <i class="column-symbol">DATA</i>
+                                        {% endif %}
+                                    </span>
+
+                                    <span class="column-status">Active</span>
+                                </div>
+
+                                <h3>{{ column }}</h3>
+
+                                <p>
+                                    {% if column == 'location' %}
+                                        Property location
+                                    {% elif column == 'total_sqft' %}
+                                        Built-up area in square feet
+                                    {% elif column == 'bath' %}
+                                        Number of bathrooms
+                                    {% elif column == 'balcony' %}
+                                        Number of balconies
+                                    {% elif column == 'bhk' %}
+                                        Number of bedrooms, hall and kitchen
+                                    {% elif column == 'price' %}
+                                        Property price in lakhs
+                                    {% else %}
+                                        Dataset field
+                                    {% endif %}
+                                </p>
+                            </div>
+                        {% endfor %}
+                    </div>
+                </section>
+
+                <p class="dataset-note">
+                    Uploading a dataset updates the data used for insights
+                    and charts. It does not retrain the prediction model.
+                </p>
+
+            </div>
+        </main>
+    </div>
+</body>
+</html>

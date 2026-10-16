@@ -1,0 +1,475 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Email Verification | EstateWise</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 24px;
+            font-family: "Segoe UI", Arial, sans-serif;
+            color: #172033;
+            background:
+                radial-gradient(circle at top left, #dbeafe 0, transparent 38%),
+                radial-gradient(circle at bottom right, #e0e7ff 0, transparent 35%),
+                #f5f7fc;
+        }
+
+        .verification-card {
+            width: 100%;
+            max-width: 440px;
+            padding: 38px 32px;
+            background: #ffffff;
+            border: 1px solid #e8edf5;
+            border-radius: 22px;
+            box-shadow: 0 20px 55px rgba(30, 41, 59, 0.10);
+            text-align: center;
+        }
+
+        .brand {
+            margin-bottom: 30px;
+            color: #172033;
+            font-size: 23px;
+            font-weight: 750;
+            letter-spacing: -0.8px;
+        }
+
+        .brand span {
+            color: #2563eb;
+        }
+
+        .security-icon {
+            width: 72px;
+            height: 72px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 22px;
+            border-radius: 22px;
+            background: #eff6ff;
+            color: #2563eb;
+        }
+
+        .security-icon svg {
+            width: 36px;
+            height: 36px;
+        }
+
+        h1 {
+            margin: 0 0 12px;
+            font-size: 27px;
+            font-weight: 750;
+            letter-spacing: -0.7px;
+        }
+
+        .description {
+            margin: 0 auto;
+            max-width: 330px;
+            color: #64748b;
+            font-size: 14px;
+            line-height: 1.8;
+        }
+
+        .code-label {
+            display: block;
+            margin: 28px 0 12px;
+            color: #334155;
+            font-size: 13px;
+            font-weight: 650;
+            text-align: left;
+        }
+
+        .code-inputs {
+            display: flex;
+            justify-content: center;
+            gap: 9px;
+            margin-bottom: 12px;
+        }
+
+        .code-inputs input {
+            width: 48px;
+            height: 56px;
+            padding: 0;
+            border: 1px solid #d7dfeb;
+            border-radius: 11px;
+            outline: none;
+            background: #fbfcff;
+            color: #172033;
+            font-size: 23px;
+            font-weight: 650;
+            text-align: center;
+            transition: border-color 0.2s, box-shadow 0.2s,
+                        background 0.2s;
+        }
+
+        .code-inputs input:focus {
+            border-color: #2563eb;
+            background: #ffffff;
+            box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.11);
+        }
+
+        .code-inputs input:disabled {
+            cursor: not-allowed;
+            opacity: 0.65;
+        }
+
+        .expiry-note {
+            margin: 14px 0 22px;
+            color: #64748b;
+            font-size: 12px;
+            line-height: 1.6;
+        }
+
+        .verify-button {
+            width: 100%;
+            min-height: 49px;
+            padding: 13px 18px;
+            border: none;
+            border-radius: 11px;
+            background: #2563eb;
+            color: #ffffff;
+            font-size: 15px;
+            font-weight: 650;
+            cursor: pointer;
+            transition: background 0.2s, transform 0.2s;
+        }
+
+        .verify-button:hover:not(:disabled) {
+            background: #1d4ed8;
+            transform: translateY(-1px);
+        }
+
+        .verify-button:disabled {
+            opacity: 0.65;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        #message {
+            min-height: 22px;
+            margin: 15px 0 0;
+            font-size: 13px;
+            line-height: 1.6;
+        }
+
+        #message.error {
+            color: #dc2626;
+        }
+
+        #message.success {
+            color: #15803d;
+        }
+
+        #message.info {
+            color: #475569;
+        }
+
+        .back-link {
+            display: inline-block;
+            margin-top: 23px;
+            color: #475569;
+            font-size: 13px;
+            font-weight: 600;
+            text-decoration: none;
+        }
+
+        .back-link:hover {
+            color: #2563eb;
+        }
+
+        .footer-note {
+            margin: 30px 0 0;
+            padding-top: 18px;
+            border-top: 1px solid #eef2f7;
+            color: #94a3b8;
+            font-size: 11px;
+            line-height: 1.6;
+        }
+
+        @media (max-width: 380px) {
+            .verification-card {
+                padding: 30px 18px;
+            }
+
+            .code-inputs {
+                gap: 6px;
+            }
+
+            .code-inputs input {
+                width: 42px;
+                height: 51px;
+                font-size: 21px;
+            }
+
+            h1 {
+                font-size: 24px;
+            }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            *,
+            *::before,
+            *::after {
+                transition: none !important;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <main class="verification-card">
+        <div class="brand">Estate<span>Wise</span></div>
+
+        <div class="security-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none"
+                 stroke="currentColor" stroke-width="1.7"
+                 stroke-linecap="round" stroke-linejoin="round">
+                <rect x="3" y="5" width="18" height="14" rx="2.5"></rect>
+                <path d="m4 7 8 6 8-6"></path>
+            </svg>
+        </div>
+
+        <h1>Verify your email</h1>
+
+        <p class="description">
+            We've sent a six-digit verification code to your email.
+            Enter the code below to securely access your account.
+        </p>
+
+        <form id="verification-form">
+            <input
+                type="hidden"
+                id="csrf-token"
+                value="{{ csrf_token() }}"
+            >
+
+            <input
+                type="hidden"
+                id="code"
+                name="code"
+            >
+
+            <label class="code-label" for="digit-1">
+                Verification code
+            </label>
+
+            <div class="code-inputs" aria-label="Six-digit verification code">
+                <input id="digit-1" type="text" inputmode="numeric"
+                       pattern="[0-9]*" maxlength="1"
+                       autocomplete="one-time-code"
+                       aria-label="Digit 1" required>
+                <input id="digit-2" type="text" inputmode="numeric"
+                       pattern="[0-9]*" maxlength="1"
+                       aria-label="Digit 2" required>
+                <input id="digit-3" type="text" inputmode="numeric"
+                       pattern="[0-9]*" maxlength="1"
+                       aria-label="Digit 3" required>
+                <input id="digit-4" type="text" inputmode="numeric"
+                       pattern="[0-9]*" maxlength="1"
+                       aria-label="Digit 4" required>
+                <input id="digit-5" type="text" inputmode="numeric"
+                       pattern="[0-9]*" maxlength="1"
+                       aria-label="Digit 5" required>
+                <input id="digit-6" type="text" inputmode="numeric"
+                       pattern="[0-9]*" maxlength="1"
+                       aria-label="Digit 6" required>
+            </div>
+
+            <p class="expiry-note">
+                Your verification code expires in five minutes.
+                Please do not share it with anyone.
+            </p>
+
+            <button type="submit" id="verify-button"
+                    class="verify-button">
+                Verify and Sign In
+            </button>
+        </form>
+
+        <p id="message" role="status" aria-live="polite"></p>
+
+        <a class="back-link" href="{{ url_for('login') }}">
+            &#8592; Back to Login
+        </a>
+
+        <p class="footer-note">
+            Secure verification powered by EstateWise
+        </p>
+    </main>
+
+    <script>
+        const form = document.getElementById("verification-form");
+        const codeField = document.getElementById("code");
+        const button = document.getElementById("verify-button");
+        const message = document.getElementById("message");
+        const csrfToken = document.getElementById("csrf-token").value;
+
+        const digits = Array.from(
+            document.querySelectorAll(".code-inputs input")
+        );
+
+        function showMessage(text, type) {
+            message.textContent = text;
+            message.className = type;
+        }
+
+        function getCode() {
+            return digits.map(input => input.value).join("");
+        }
+
+        digits.forEach((input, index) => {
+            input.addEventListener("input", function () {
+                const cleaned = this.value.replace(/\D/g, "");
+                this.value = cleaned.slice(-1);
+
+                showMessage("", "");
+
+                if (this.value && index < digits.length - 1) {
+                    digits[index + 1].focus();
+                }
+
+                codeField.value = getCode();
+            });
+
+            input.addEventListener("keydown", function (event) {
+                if (
+                    event.key === "Backspace" &&
+                    !this.value &&
+                    index > 0
+                ) {
+                    digits[index - 1].focus();
+                }
+
+                if (
+                    event.key === "ArrowLeft" &&
+                    index > 0
+                ) {
+                    digits[index - 1].focus();
+                }
+
+                if (
+                    event.key === "ArrowRight" &&
+                    index < digits.length - 1
+                ) {
+                    digits[index + 1].focus();
+                }
+            });
+
+            input.addEventListener("paste", function (event) {
+                event.preventDefault();
+
+                const pasted = (
+                    event.clipboardData || window.clipboardData
+                ).getData("text").replace(/\D/g, "").slice(0, 6);
+
+                if (!pasted) {
+                    return;
+                }
+
+                digits.forEach((digit, i) => {
+                    digit.value = pasted[i] || "";
+                });
+
+                codeField.value = getCode();
+
+                const nextEmpty = digits.findIndex(
+                    digit => !digit.value
+                );
+
+                if (nextEmpty === -1) {
+                    digits[5].focus();
+                } else {
+                    digits[nextEmpty].focus();
+                }
+
+                showMessage("", "");
+            });
+        });
+
+        form.addEventListener("submit", async function (event) {
+            event.preventDefault();
+
+            const code = getCode();
+
+            codeField.value = code;
+
+            if (!/^\d{6}$/.test(code)) {
+                showMessage(
+                    "Please enter all six digits of your code.",
+                    "error"
+                );
+
+                const firstEmpty = digits.find(
+                    input => !input.value
+                );
+
+                if (firstEmpty) {
+                    firstEmpty.focus();
+                }
+
+                return;
+            }
+
+            button.disabled = true;
+            button.textContent = "Verifying...";
+            showMessage("Checking your verification code...", "info");
+
+            try {
+                const response = await fetch(
+                    "{{ url_for('verify_email_code_submit') }}",
+                    {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json",
+                            "X-CSRFToken": csrfToken
+                        },
+                        body: JSON.stringify({ code: code })
+                    }
+                );
+
+                const contentType =
+                    response.headers.get("content-type") || "";
+
+                if (!contentType.includes("application/json")) {
+                    throw new Error(
+                        "The server returned an unexpected response."
+                    );
+                }
+
+                const result = await response.json();
+
+                if (response.ok && result.success) {
+                    showMessage("Verification successful. Redirecting...", "success");
+                    window.location.href = result.redirect;
+                    return;
+                }
+
+                showMessage(
+                    result.error || "Verification failed. Please try again.",
+                    "error"
+                );
+            } catch (error) {
+                showMessage(
+                    "Unable to verify the code. Please check your connection and try again.",
+                    "error"
+                );
+            } finally {
+                button.disabled = false;
+                button.textContent = "Verify and Sign In";
+            }
+        });
+
+        digits[0].focus();
+    </script>
+</body>
+</html>

@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Prediction History</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <header class="header">
+    <div class="container">
+        <div class="header-brand">
+            <h1>Prediction History</h1>
+            <p>View your previous house price estimates.</p>
+        </div>
+
+        <div class="history-actions">
+            <span>Welcome, {{ session.get('user_name', 'User') }}</span>
+            <a href="{{ url_for('home') }}" class="back-prediction-button">
+            <span aria-hidden="true">←</span>
+             Back to Prediction
+            </a>
+            <form action="{{ url_for('logout') }}" method="POST">
+                <button type="submit" class="logout-button">Log Out</button>
+            </form>
+        </div>
+
+    </div>
+    </header>
+
+    
+    
+    <main class="container main-content">
+
+        {% if session.get('user_role') == 'admin' %}
+           <a href="{{ url_for('admin_dashboard') }}" class="admin-back-button">
+                 &larr; Back to Admin Dashboard
+           </a>
+        {% endif %}
+        <section class="form-card history-card">
+            {% if predictions %}
+                <div class="history-table-wrapper">
+                    <table class="history-table">
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Location</th>
+                                <th>Area (sq. ft.)</th>
+                                <th>BHK</th>
+                                <th>Bathrooms</th>
+                                <th>Balconies</th>
+                                <th>Estimated Price</th>
+                                <th>Price per Sq. Ft.</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for item in predictions %}
+                                <tr>
+                                    <td>{{ item.display_time }}</td>
+                                    <td>{{ item.location }}</td>
+                                    <td>{{ "{:,.0f}".format(item.total_sqft) }}</td>
+                                    <td>{{ item.bhk }}</td>
+                                    <td>{{ item.bath }}</td>
+                                    <td>{{ item.balcony }}</td>
+                                    <td>₹{{ "{:,.2f}".format(item.predicted_price) }} lakhs</td>
+                                    <td>₹{{ "{:,.2f}".format(item.price_per_sqft) }}</td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            {% else %}
+                <div class="empty-history">
+                    <h2>No predictions yet</h2>
+                    <p>Your successful predictions will appear here.</p>
+                    <a href="{{ url_for('home') }}">Predict a House Price</a>
+                </div>
+            {% endif %}
+        </section>
+    </main>
+
+    <footer>
+        <p>House Price Prediction System | Machine Learning Project</p>
+    </footer>
+    
+<script>
+    function applyTheme(theme) {
+        document.body.dataset.theme = theme;
+    }
+
+    const savedTheme = localStorage.getItem("housePriceTheme") || "light";
+    applyTheme(savedTheme);
+</script>
+
+</body>
+</html>

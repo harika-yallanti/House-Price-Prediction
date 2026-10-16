@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Compare House Prices</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+
+    <div class="container">
+        <div class="comparison-card">
+            <h1>Compare House Prices</h1>
+            <p class="subtitle">Compare estimated house prices across different Bengaluru locations.</p>
+            
+            {% if session.get('user_role') == 'admin' %}
+              <a href="{{ url_for('admin_dashboard') }}" class="admin-back-button">
+                   &larr; Back to Admin Dashboard
+              </a>
+            {% endif %}
+
+            <form method="POST" action="{{ url_for('compare') }}">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
+                <div class="form-group">
+                    <label for="total_sqft">Area (Square Feet)</label>
+                    <input type="number"
+                           id="total_sqft"
+                           name="total_sqft"
+                           min="300"
+                           max="10000"
+                           step="any"
+                           value="{{ form_data.total_sqft }}"
+                           required>
+                </div>
+
+                <div class="form-group">
+                    <label for="bhk">Bedrooms (BHK)</label>
+                    <input type="number"
+                           id="bhk"
+                           name="bhk"
+                           min="1"
+                           max="10"
+                           value="{{ form_data.bhk }}"
+                           required>
+                </div>
+
+                <div class="form-group">
+                    <label for="bath">Bathrooms</label>
+                    <input type="number"
+                           id="bath"
+                           name="bath"
+                           min="1"
+                           max="10"
+                           value="{{ form_data.bath }}"
+                           required>
+                </div>
+
+                <div class="form-group">
+                    <label for="balcony">Balconies</label>
+                    <input type="number"
+                           id="balcony"
+                           name="balcony"
+                           min="0"
+                           max="5"
+                           value="{{ form_data.balcony }}"
+                           required>
+                </div>
+
+                <div class="form-group">
+                    <label>Select Locations to Compare</label>
+
+                    <div class="location-dropdown" id="locationDropdown">
+                        <button type="button"
+                                class="location-dropdown-button"
+                                id="locationDropdownButton"
+                                aria-expanded="false"
+                                aria-controls="locationMenu">
+                            <span id="locationLabel">Choose locations</span>
+                            <span>▼</span>
+                        </button>
+
+                        <div class="location-dropdown-menu"
+                             id="locationMenu"
+                             hidden>
+
+                            <input type="text"
+                                   id="locationSearch"
+                                   class="location-search"
+                                   placeholder="Search locations..."
+                                   autocomplete="off">
+
+                            <div class="location-list">
+                                {% for location in locations %}
+                                <label class="location-option"
+                                       data-location="{{ location | lower }}">
+                                    <input type="checkbox"
+                                           name="locations"
+                                           value="{{ location }}"
+                                           {% if location in form_data.locations %}checked{% endif %}>
+                                    <span>{{ location }}</span>
+                                </label>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+
+                    <small>Select at least two locations to compare.</small>
+                </div>
+
+                <button type="submit" class="compare-button">
+                    Compare Locations
+                </button>
+
+            </form>
+        </div>
+
+        {% if error %}
+        <div class="error-message">
+            {{ error }}
+        </div>
+        {% endif %}
+
+        
+{% if comparisons %}
+<div class="comparison-results">
+    <h2>Location Comparison Results</h2>
+    <p class="subtitle">
+        Compare estimated property prices for the same property details.
+    </p>
+
+    <div class="results-summary">
+        <div class="summary-item">
+            <span>Locations Compared</span>
+            <strong>{{ comparisons | length }}</strong>
+        </div>
+
+    <div class="summary-item">
+      <span>Lowest Estimated Price</span>
+      <strong>
+          ₹{{ "%.2f"|format(comparisons | map(attribute='predicted_price') | min) }} L
+      </strong>
+    </div>
+
+    <div class="summary-item">
+      <span>Highest Estimated Price</span>
+      <strong>
+          ₹{{ "%.2f"|format(comparisons | map(attribute='predicted_price') | max) }} L
+      </strong>
+    </div>
+</div>
+
+    <div class="results-grid">
+        {% for item in comparisons %}
+        <div class="result-card">
+            <div class="result-card-header">
+                <span class="location-rank">Rank {{ loop.index }}</span>
+                <h3>{{ item.location }}</h3>
+            </div>
+
+            <p class="result-label">Estimated Property Price</p>
+            <div class="result-price">
+                ₹{{ "%.2f"|format(item.predicted_price) }} <span>lakhs</span>
+            </div>
+
+            <div class="result-divider"></div>
+
+            <div class="result-detail">
+                <span>Price per sq. ft.</span>
+                <strong>₹{{ "%.2f"|format(item.price_per_sqft) }}</strong>
+            </div>
+
+            {% if loop.first %}
+            <div class="result-note">Highest estimated price</div>
+            {% elif loop.last %}
+            <div class="result-note">Lowest estimated price</div>
+            {% endif %}
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endif %}
+
+
+        
+    <div class="back-home-container">
+       <a href="{{ url_for('home') }}" class="back-home-button">
+          ← Back to Home
+       </a>
+    </div>
+
+    </div>
+
+    <script>
+        const dropdown = document.getElementById("locationDropdown");
+        const dropdownButton = document.getElementById("locationDropdownButton");
+        const menu = document.getElementById("locationMenu");
+        const searchInput = document.getElementById("locationSearch");
+        const locationLabel = document.getElementById("locationLabel");
+
+        function toggleLocationDropdown() {
+            menu.hidden = !menu.hidden;
+            dropdownButton.setAttribute("aria-expanded", String(!menu.hidden));
+
+            if (!menu.hidden) {
+                searchInput.focus();
+            }
+        }
+
+        function filterLocations() {
+            const search = searchInput.value.trim().toLowerCase();
+
+            document.querySelectorAll("#locationDropdown .location-option").forEach(option => {
+                option.style.display = option.dataset.location.includes(search)
+                    ? "flex"
+                    : "none";
+            });
+        }
+
+        function updateLocationLabel() {
+            const selected = document.querySelectorAll(
+                '#locationDropdown input[name="locations"]:checked'
+            );
+
+            locationLabel.textContent = selected.length === 0
+                ? "Choose locations"
+                : selected.length + " location(s) selected";
+        }
+
+        dropdownButton.addEventListener("click", toggleLocationDropdown);
+        searchInput.addEventListener("input", filterLocations);
+
+        document.querySelectorAll(
+            '#locationDropdown input[name="locations"]'
+        ).forEach(checkbox => {
+            checkbox.addEventListener("change", updateLocationLabel);
+        });
+
+        document.addEventListener("click", function(event) {
+            if (!dropdown.contains(event.target)) {
+                menu.hidden = true;
+                dropdownButton.setAttribute("aria-expanded", "false");
+            }
+        });
+
+        document.addEventListener("keydown", function(event) {
+            if (event.key === "Escape") {
+                menu.hidden = true;
+                dropdownButton.setAttribute("aria-expanded", "false");
+            }
+        });
+
+        updateLocationLabel();
+    </script>
+
+<script>
+    function applyTheme(theme) {
+        document.body.dataset.theme = theme;
+    }
+
+    const savedTheme = localStorage.getItem("housePriceTheme") || "light";
+    applyTheme(savedTheme);
+</script>
+
+</body>
+</html>
